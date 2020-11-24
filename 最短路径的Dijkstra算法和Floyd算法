@@ -1,0 +1,84 @@
+/* 最短路径与最小生成树的区别:最短路径不一定包含n个顶点，也不一定包含n-1条边/
+
+/Dijkstra算法：单源最短路径
+1. 初始化：找出源点到所有重点的路径
+2. 选择： 选择最短的路径(V0,u)，确定一条最短路径(V0,u)
+3. 更新： 对其余路径进行更新，以u为节点，如果（V0，u）+(u, Vk)<(V0,Vk)，则以(V0,u,Vk)代替(V0,Vk)
+4. 重复2和3，找到最短的路径，并以它的终点为节点，更新它后边的节点的路径长度，比较大小来选择最短的路径
+
+*/
+
+void ShortestPath_Dijkstra(MGraph G, int v0, Patharc *p, ShortPathTable *D)
+{
+    int v,w,k,min;
+    int final[NAXVEX];
+    for(v=0; v<G.numVertexes; v++)
+    {
+        final[v] = 0;
+        (*D) [v] = G.arc[v0][v];
+        (*P) [v] = 0;
+    }
+    (*D) [v0] = 0;
+    final[v0] = 1;
+    for(v=1;v<G.numVertexes; v++)
+    {
+        min=INFINITY;
+        for (w = 0; w<G.numVertexes; w++) 
+        {
+            if(!final[w] && (*D)[w]<min)
+            {
+                k=w;
+                min = (*D)[w];
+            }
+        }
+        final[k] = 1;
+        for(w = 0;w<G.numVertexes;w++)
+        {
+            if(!final[w] && (min+G.arc[k][w]<(*D)[w]))
+            (*D)[w] = min + G.arc[k][w];/*最短路径*/
+            (*P)[w] = k;/*最短路径的前驱下标*/
+        }
+    }
+}
+
+
+void Shortestpath_Floyd(MGraph G,Pathmatrix *p, ShortPathTable *D)
+{
+    int v,w,k;
+    for(v = 0; v<G.numVertexes; ++v)
+    {
+        for(w=0; G.numVertexes; ++w)
+        {
+            (*D)[v][w] = G.matrix[v][w];
+            (*P)[v][w] = w;
+        }
+    }
+    for(k=0;k<G.numVertexes; ++k)
+    {
+        for(v=0;v<G.numVertexes; ++v)
+        {
+            for(w=0;w<G.numVertexes;++w)
+            {
+                if((*D)[v][w]>(*D)[v][k]+(*D)[k][w])
+                {
+                    (*D)[v][w]=(*D)[v][k]+(*D)[v][k];
+                    (*P)[v][w]=(*P)[v][k];
+                }
+            }
+        }
+    }
+} 
+
+/*使用Path表来获得<u,v>最短路径*/
+void printPath(int u,int v,
+                int path[][max])
+{
+    if(path[u][v])
+        直接输出；
+    else
+    {
+        int mid = path[u][v];
+        printPath(u,mid,path);
+        printPath(mid,v,path);
+    }
+}                
